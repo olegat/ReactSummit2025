@@ -1,0 +1,12 @@
+import ZoomPanCanvas from "./components/ZoomPanCanvas";
+
+export default function App() {
+  return (
+    <div style={{ textAlign: "center", marginTop: "2rem" }}>
+      <h1>Hello World 👋</h1>
+      <p>This is your starter page.</p>
+
+      <ZoomPanCanvas src="https://www.w3schools.com/html/pic_trulli.jpg" />
+    </div>
+  );
+}
