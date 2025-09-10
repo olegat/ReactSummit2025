@@ -53,39 +53,31 @@ function solveTwoUnknowns(x1: number, x2: number, a1: number, a2: number, Rx: nu
     return { min, max };
 }
 
-export default function ZoomPanCanvas({
-  src,
-  width = 400,
-  height = 300,
-}: ZoomPanCanvasProps) {
+export default function ZoomPanCanvas({ src, width = 400, height = 300 }: ZoomPanCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [transform, setTransform] = useState<Transform>({ translationX: 0, translationY: 0, scaleX: 1, scaleY: 1 });
 
-  const initialZoom: NormalZoom = { x: { min: 0, max: 1 }, y: { min: 0, max: 1 } };
-  const currentZoom: NormalZoom = { x: { min: 0, max: 1 }, y: { min: 0, max: 1 } };
-  const origins: [TouchOrigin, TouchOrigin] = [
-    { identifier: NaN, normalX: NaN, normalY: NaN },
-    { identifier: NaN, normalX: NaN, normalY: NaN },
-  ];
+  const gestureRef = useRef({
+    initialZoom: { x: { min: 0, max: 1 }, y: { min: 0, max: 1 } },
+    currentZoom: { x: { min: 0, max: 1 }, y: { min: 0, max: 1 } },
+    origins: [
+      { identifier: NaN, normalX: NaN, normalY: NaN },
+      { identifier: NaN, normalX: NaN, normalY: NaN },
+    ] as [TouchOrigin, TouchOrigin], // TODO(olegat) remove `as`
+  });
 
   function updateTransform(zoom: NormalZoom) {
     const scaleX = N / (zoom.x.max - zoom.x.min);
     const scaleY = N / (zoom.y.max - zoom.y.min);
-
     const translationX = -zoom.x.min * scaleX;
     const translationY = -zoom.y.min * scaleY;
-
-    setTransform({
-      translationX,
-      translationY,
-      scaleX,
-      scaleY,
-    });
+    setTransform({ translationX, translationY, scaleX, scaleY });
   }
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     if (e.targetTouches.length === 2 && containerRef.current != null) {
       e.preventDefault();
+      const { origins, initialZoom } = gestureRef.current;
       const { x: Rx, y: Ry, width: Rw, height: Rh } = containerRef.current.getBoundingClientRect();
       for (const i of [0, 1]) {
         const a = e.targetTouches[i].clientX;
@@ -98,6 +90,7 @@ export default function ZoomPanCanvas({
   };
 
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    const { origins, currentZoom } = gestureRef.current;
     if (containerRef.current != null && e.targetTouches.length === 2) {
       e.preventDefault();
       const { x: Rx, y: Ry, width: Rw, height: Rh } = containerRef.current.getBoundingClientRect();
@@ -127,21 +120,13 @@ export default function ZoomPanCanvas({
   };
 
   const handleTouchEnd = (_e: React.TouchEvent<HTMLDivElement>) => {
-    initialZoom.x = currentZoom.x;
-    initialZoom.y = currentZoom.y;
+    gestureRef.current.initialZoom = gestureRef.current.currentZoom;
   };
 
   return (
     <div
       ref={containerRef}
-      style={{
-        width,
-        height,
-        overflow: "hidden",
-        border: "4px solid #ccc",
-        touchAction: "none",
-        margin: "1rem auto",
-      }}
+      style={{ width, height, overflow: "hidden", border: "4px solid #ccc", touchAction: "none" }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -155,8 +140,9 @@ export default function ZoomPanCanvas({
           height: "100%",
           objectFit: "cover",
           transform: `
-          translate(${transform.translationX}px, ${transform.translationY}px)
-          scale(${transform.scaleX}, ${transform.scaleY})`,
+            translate(${transform.translationX}px, ${transform.translationY}px)
+            scale(${transform.scaleX}, ${transform.scaleY})
+          `,
           transformOrigin: "center center",
         }}
       />
