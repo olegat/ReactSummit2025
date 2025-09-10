@@ -66,11 +66,11 @@ export default function ZoomPanCanvas({ src, width = 400, height = 300 }: ZoomPa
     ] as [TouchOrigin, TouchOrigin], // TODO(olegat) remove `as`
   });
 
-  function updateTransform(zoom: NormalZoom, Rw: number, Rh: number) {
+  function updateTransform(zoom: NormalZoom, Ry: number, Rw: number, Rh: number) {
     const scaleX = Rw / (zoom.x.max - zoom.x.min);
     const scaleY = Rh / (zoom.y.max - zoom.y.min);
     const translationX = -zoom.x.min * scaleX;
-    const translationY = -zoom.y.min * scaleY;
+    const translationY = -(Ry + Rh - zoom.y.min * scaleY);
     setTransform({ translationX, translationY, scaleX, scaleY });
   }
 
@@ -115,7 +115,7 @@ export default function ZoomPanCanvas({ src, width = 400, height = 300 }: ZoomPa
 
       currentZoom.x = solveTwoUnknowns(x1, x2, a1, a2, Rx, Rw);
       currentZoom.y = solveTwoUnknowns(y1, y2, b1, b2, Rx, Rw);
-      updateTransform(currentZoom, Rw, Rh);
+      updateTransform(currentZoom, Ry, Rw, Rh);
     }
   };
 
