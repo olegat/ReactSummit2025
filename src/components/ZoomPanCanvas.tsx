@@ -61,11 +61,11 @@ function solveTwoUnknowns(x1: number, x2: number, a1: number, a2: number, Rx: nu
 
 export default function ZoomPanCanvas({ src, width = 400, height = 300 }: ZoomPanCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [transform, setTransform] = useState<Transform>({ translationX: 0, translationY: 0, scaleX: 2, scaleY: 1 });
+  const [transform, setTransform] = useState<Transform>({ translationX: 0, translationY: 0, scaleX: 1, scaleY: 1 });
 
   const gestureRef = useRef({
-    initialZoom: { x: { min: 0, max: N/2 }, y: { min: 0, max: N } },
-    currentZoom: { x: { min: 0, max: N/2 }, y: { min: 0, max: N } },
+    initialZoom: { x: { min: 0, max: N }, y: { min: 0, max: N } },
+    currentZoom: { x: { min: 0, max: N }, y: { min: 0, max: N } },
     origins: [
       { identifier: NaN, normalX: NaN, normalY: NaN },
       { identifier: NaN, normalX: NaN, normalY: NaN },
