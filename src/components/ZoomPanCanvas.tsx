@@ -2,8 +2,8 @@ import { useRef, useState } from "react";
 
 interface ZoomPanCanvasProps {
   src: string;
-  width?: number;
-  height?: number;
+  width?: number | `${number}%`;
+  height?: number | `${number}%`;
 }
 
 interface Transform {
