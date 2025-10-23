@@ -76,7 +76,7 @@ export default function ZoomPanCanvas({ src, width = 400, height = 300 }: ZoomPa
     const scaleX = N / (zoom.x.max - zoom.x.min);
     const scaleY = N / (zoom.y.max - zoom.y.min);
     const translationX = toClient(zoom.x, zoom.x.min, Rx, Rw);
-    const translationY = 0//toClient(zoom.y, zoom.y.min, Ry, Rh);
+    const translationY = Rh - toClient(zoom.y, zoom.y.min, Ry, Rh);
     setTransform({ translationX, translationY, scaleX, scaleY });
   }
 
@@ -121,7 +121,7 @@ export default function ZoomPanCanvas({ src, width = 400, height = 300 }: ZoomPa
       const b2 = Ry + Rh - touches[1].clientY;
 
       currentZoom.x = solveTwoUnknowns(x1, x2, a1, a2, Rx, Rw);
-      //currentZoom.y = solveTwoUnknowns(y1, y2, b1, b2, Ry, Rh);
+      currentZoom.y = solveTwoUnknowns(y1, y2, b1, b2, Ry, Rh);
       updateTransform(currentZoom, Rx, Ry, Rw, Rh);
     }
   };
