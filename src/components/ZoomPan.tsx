@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-interface ZoomPanCanvasProps {
+interface ZoomPanProps {
   src: string;
   width?: number | `${number}%`;
   height?: number | `${number}%`;
@@ -59,7 +59,7 @@ function solveTwoUnknowns(x1: number, x2: number, a1: number, a2: number, Rx: nu
     return { min, max };
 }
 
-export default function ZoomPanCanvas({ src, width = 400, height = 300 }: ZoomPanCanvasProps) {
+export default function ZoomPan({ src, width = 400, height = 300 }: ZoomPanProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [transform, setTransform] = useState<Transform>({ translationX: 0, translationY: 0, scaleX: 1, scaleY: 1 });
 
