@@ -84,7 +84,6 @@ export default function ZoomPan({ src, width = 400, height = 300 }: ZoomPanProps
     if (e.targetTouches.length === 2 && containerRef.current != null) {
       e.preventDefault();
       const { origins, initialZoom } = gestureRef.current;
-      console.log(initialZoom);
       const { x: Rx, y: Ry, width: Rw, height: Rh } = containerRef.current.getBoundingClientRect();
       for (const i of [0, 1]) {
         const a = e.targetTouches[i].clientX;
