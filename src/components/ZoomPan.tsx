@@ -44,7 +44,7 @@ export default function ZoomPan({ src, width = 400, height = 300 }: ZoomPanProps
   return (
     <div
       ref={containerRef}
-      style={{ width, height, overflow: "hidden", border: "4px solid #ccc", touchAction: "none" }}
+      style={{ width, height, overflow: 'hidden', background: 'lime', touchAction: 'none' }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -52,8 +52,8 @@ export default function ZoomPan({ src, width = 400, height = 300 }: ZoomPanProps
     >
       <img
         src={src}
-        alt="Zoomable"
-        style={{ width: "100%", height: "100%", objectFit: "cover", transform, transformOrigin: "left top" }}
+        alt='Zoomable'
+        style={{ width: '100%', height: '100%', transform, transformOrigin: 'left top' }}
       />
     </div>
   );
