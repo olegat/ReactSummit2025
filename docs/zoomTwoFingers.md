@@ -9,28 +9,28 @@ Open in github.com or compile using Pandoc for more readable format:
 
 ## Overview
 
-The `ZoomTwoFingers` class solves the multitouch zoom-pan problem by finding new
+The `ZoomPanSolver` class solves the multitouch zoom-pan problem by finding new
 X-min, X-max, Y-min, Y-max zoom values such that the fingers are always touching
-the same point in the chart. It accomplishes by solving a "two unknowns, two
-equations" problem twice (or more generally: it solve a "four unknowns, four
-equations" problem, although in practice the zoom values for X and Y axes can be
-solved independently).
+the same point in the `<ZoomPan>` element. It accomplishes by solving a "two
+unknowns, two equations" problem twice (or more generally: it solve a "four
+unknowns, four equations" problem, although in practice the zoom values for X
+and Y axes can be solved independently).
 
-We can start by finding X-min and X-max because the math is mostly the same for
-the Y axis.
+We can start by finding X-min and X-max, because the math is the same for the Y
+axis.
 
-Let's first define the series-area as $R$:
+Let's first define the CSS Client Bounds of our `<ZoomPan>` element as $R$:
 
 $$
 \begin{align*}
-& R_x : & \textrm{x-position of series-area} \\
-& R_y : & \textrm{y-position of series-area} \\
-& R_W : & \textrm{width of series-area} \\
-& R_H : & \textrm{height of series-area}
+& R_x : & \textrm{x-position of ZoomPan element} \\
+& R_y : & \textrm{y-position of ZoomPan element} \\
+& R_W : & \textrm{width of ZoomPan element} \\
+& R_H : & \textrm{height of ZoomPan element}
 \end{align*}
 $$
 
-These are all contants in screen pixels.
+These are all contants in client screen pixels.
 
 Let's also define:
 
@@ -44,8 +44,8 @@ Let's also define:
 $N$ is typically $1$, but it can be set to a higher value for more precision.
 
 Note that, in the interest of simplicity, the assumption here is that fingers
-will always stay with bounds the series-area. In practice however the user can
-drag fingers outside the series-area, so the production code will need to clamp
+will always stay with bounds the `<ZoomPan`>. In practice however the user can
+drag fingers outside the `<ZoomPan>`, so the production code may need to clamp
 screen values.
 
 ## Start
@@ -143,22 +143,53 @@ Z\prime_{min} &= \frac{x_1 - c \cdot x_2}{N - t_1 + c \cdot (t_2 - N)} \\
 $$
 
 ## Y Axis
-For the Y axis, the math is exactly the same. The only caveat for the Y axis is
-that 0 is the bottom in normalised coords and 0 is the top in screen
-coords. Therefore, the values must be flipped to account for this.
-
-We can solve the use Y-min and Y-max values by substituting these inputs for the
-X-min and X-max computation:
+For the Y axis, the math is exactly the same. We can solve the use Y-min and
+Y-max values by substituting these inputs for the X-min and X-max computation:
 
 $$
 \begin{align*}
 R_x &:= R_y \\
 R_W &:= R_H \\
 x_i &:= y_i \\
-a\prime_i &:= (R_H + R_y) - b'_i
+a\prime_i &:= b\prime_i
 \end{align*}
 $$
 
-Where $y_i \in{[0, 1]}$ and $b'_i \in [R_y, R_H]$ are the normalised and screen
-values of finger $i$ on the Y axis.
+Where $y_i \in{[0, N]}$ and $b\prime_i \in [R_y, R_H]$ are the normalised and
+screen values of finger $i$ on the Y axis.
 
+### Flipped direction
+
+The only caveat for the Y axis is that 0 is the bottom in some use cases (such
+as charts), and 0 is the top in screen coords. The `ZoomPanSolver` class does
+not care about the Y axis direction, because the math remains the same in both
+directions, and the normalised values are internal (private).
+
+Depending on the use case, you may need to expose the normalised values
+externally, and thus the normalised values would need be flipped to account for
+this:
+
+$$
+\begin{align*}
+R_x &:= R_y \\
+R_W &:= R_H \\
+x_i &:= y_i \\
+-a\prime_i &:= (R_H + R_y) - b\prime_i
+\end{align*}
+$$
+
+Alternatively, you can also change the Y direction by calculating the
+complement:
+
+```ts
+public getNormalY(dir?: 'downwards' | 'upwards'): MinMax {
+  if (dir === 'upwards') {
+    return {
+      min: 1 - this.currentZoomY.min,
+      max: 1 - this.currentZoomY.max,
+    };
+  } else {
+    return this.currentZoomY;
+  }
+}
+```
