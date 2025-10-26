@@ -38,7 +38,7 @@ Let's also define:
     current axis.
 -   $a_i \in [R_x, R_W]$ as the initial screen value of finger $i$ on the current
     axis.
--   $Z_{min}, Z_{max} \in [0, 1]$ as the initial normalised zoom values on the current
+-   $Z_{min}, Z_{max} \in [0, N]$ as the initial normalised zoom values on the current
     axis.
 
 $N$ is typically $1$, but it can be set to a higher value for more precision.
@@ -70,7 +70,7 @@ Our only inputs when receive `'touchmove'` event is $R$ (series-rect), which is
 should be unchanged, and $a\prime_1, a\prime_2 \in [R_x, R_W]$, the new screen values of
 the two fingers on the current axis.
 
-Our desired outputs are $Z\prime_{min}, Z\prime_{max} \in [0, 1]$, the new normalised zoom
+Our desired outputs are $Z\prime_{min}, Z\prime_{max} \in [0, N]$, the new normalised zoom
 values on the current axis.
 
 The interpolation logic is the same during a `'touchmove'` event:
