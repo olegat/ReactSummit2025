@@ -29,7 +29,7 @@ interface Transform {
   scaleY: number;
 }
 
-const N = 1_000_000;
+const N = 1;
 
 // Interpolate `a` from client [Rx, Rw] to normal [min, max]
 function toNormal({ min, max }: MinMax, a: number, Rx: number, Rw: number): number {
@@ -72,13 +72,13 @@ export class ZoomPanSolver {
     let a: number, b: number;
 
     a = targetTouch1.clientX;
-    b = Ry + Rh - targetTouch1.clientY;
+    b = targetTouch1.clientY;
     this.origins1.identifier = targetTouch1.identifier;
     this.origins1.normalX = toNormal(this.initialZoomX, a, Rx, Rw);
     this.origins1.normalY = toNormal(this.initialZoomY, b, Ry, Rh);
 
     a = targetTouch2.clientX;
-    b = Ry + Rh - targetTouch2.clientY;
+    b = targetTouch2.clientY;
     this.origins2.identifier = targetTouch2.identifier;
     this.origins2.normalX = toNormal(this.initialZoomX, a, Rx, Rw);
     this.origins2.normalY = toNormal(this.initialZoomY, b, Ry, Rh);
@@ -99,8 +99,8 @@ export class ZoomPanSolver {
     const a2 = touches2.clientX;
     const y1 = origins1.normalY;
     const y2 = origins2.normalY;
-    const b1 = Ry + Rh - touches1.clientY;
-    const b2 = Ry + Rh - touches2.clientY;
+    const b1 = touches1.clientY;
+    const b2 = touches2.clientY;
 
     this.currentZoomX = solveTwoUnknowns(x1, x2, a1, a2, Rx, Rw);
     this.currentZoomY = solveTwoUnknowns(y1, y2, b1, b2, Ry, Rh);
@@ -119,7 +119,7 @@ export class ZoomPanSolver {
       scaleX: N / (zoomX.max - zoomX.min),
       scaleY: N / (zoomY.max - zoomY.min),
       translationX: toClient(zoomX, zoomX.min, Rx, Rw),
-      translationY: Rh - toClient(zoomY, zoomY.min, Ry, Rh),
+      translationY: toClient(zoomY, zoomY.min, Ry, Rh),
     };
   }
 }
