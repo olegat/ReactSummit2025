@@ -118,8 +118,8 @@ export class ZoomPanSolver {
     return {
       scaleX: N / (zoomX.max - zoomX.min),
       scaleY: N / (zoomY.max - zoomY.min),
-      translationX: toClient(zoomX, zoomX.min, Rx, Rw),
-      translationY: toClient(zoomY, zoomY.min, Ry, Rh),
+      translationX: toClient(zoomX, 0, Rx, Rw) - Rx,
+      translationY: toClient(zoomY, 0, Ry, Rh) - Ry,
     };
   }
 }
