@@ -17,6 +17,6 @@ for texfile in *.tex; do
 
   # Generate PNG if it doesn't exist
   if [ ! -f "$base.png" ]; then
-    magick convert -background none "$base.svg" "$base.png"
+    magick -background none "$base.svg" "$base.png"
   fi
 done
