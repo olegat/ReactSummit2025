@@ -6,6 +6,7 @@
 //
 // Usage:
 //   node tex2svg.js < in.tex > out.svg
+//   magick -background none out.svg out2.png
 
 import {mathjax} from 'mathjax-full/js/mathjax.js'
 import {TeX} from 'mathjax-full/js/input/tex.js'

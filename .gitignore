@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Mathjax/ImageMagick artifacts
+slides/math/*.svg
+slides/math/*.png
