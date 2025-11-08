@@ -1,0 +1,68 @@
+(function() {
+  const touches = {};
+
+  function createTouchCircle(touch) {
+    const circle = document.createElement('div');
+    circle.className = 'touch-circle';
+    Object.assign(circle.style, {
+      position: 'absolute',
+      width: '50px',
+      height: '50px',
+      marginLeft: '-25px',
+      marginTop: '-25px',
+      borderRadius: '50%',
+      backgroundColor: 'rgba(0, 150, 250, 0.5)',
+      pointerEvents: 'none',
+      zIndex: '10000',
+      transition: 'transform 0.1s',
+      left: `${touch.clientX}px`,
+      top: `${touch.clientY}px`,
+    });
+    document.body.appendChild(circle);
+    return circle;
+  }
+
+  function updateTouchCircle(touch) {
+    const circle = touches[touch.identifier];
+    if (circle) {
+      circle.style.left = `${touch.clientX}px`;
+      circle.style.top = `${touch.clientY}px`;
+    }
+  }
+
+  function removeTouchCircle(touch) {
+    const circle = touches[touch.identifier];
+    if (circle) {
+      circle.remove();
+      delete touches[touch.identifier];
+    }
+  }
+
+  const options = { capture: true }; // <- Aggressive capture mode
+
+  document.addEventListener('touchstart', (e) => {
+    for (const touch of e.changedTouches) {
+      touches[touch.identifier] = createTouchCircle(touch);
+    }
+  }, options);
+
+  document.addEventListener('touchmove', (e) => {
+    for (const touch of e.changedTouches) {
+      updateTouchCircle(touch);
+    }
+  }, options);
+
+  document.addEventListener('touchend', (e) => {
+    for (const touch of e.changedTouches) {
+      removeTouchCircle(touch);
+    }
+  }, options);
+
+  document.addEventListener('touchcancel', (e) => {
+    for (const touch of e.changedTouches) {
+      removeTouchCircle(touch);
+    }
+  }, options);
+
+  console.log('Aggressive touch visualizer injected (capture:true)!');
+})();
