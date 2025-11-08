@@ -8,6 +8,7 @@
 //   node tex2svg.js < in.tex > out.svg
 //   magick -background none out.svg out2.png
 
+import {AllPackages} from 'mathjax-full/js/input/tex/AllPackages.js'
 import {mathjax} from 'mathjax-full/js/mathjax.js'
 import {TeX} from 'mathjax-full/js/input/tex.js'
 import {SVG} from 'mathjax-full/js/output/svg.js'
@@ -17,7 +18,9 @@ import {RegisterHTMLHandler} from 'mathjax-full/js/handlers/html.js'
 const adaptor = liteAdaptor()
 RegisterHTMLHandler(adaptor)
 
-const texInput = new TeX()
+// Enable AMS-style environments like align, gather, cases, etc.
+const texInput = new TeX({ packages: AllPackages.sort() });
+
 const svgOutput = new SVG({fontCache: 'none'})
 const html = mathjax.document('', {InputJax: texInput, OutputJax: svgOutput})
 
