@@ -1,3 +1,5 @@
+const N = 1;
+
 interface MinMax {
   min: number;
   max: number;
@@ -16,25 +18,16 @@ interface OriginTouch {
   normalY: number;
 }
 
-interface TargetTouch {
+interface Touch {
   identifier: number;
   clientX: number;
   clientY: number;
 }
 
-interface Transform {
-  translationX: number;
-  translationY: number;
-  scaleX: number;
-  scaleY: number;
-}
-
-const N = 1;
-
 // Interpolate `a` from client [Rx, Rw] to normal [min, max]
 function toNormal({ min, max }: MinMax, a: number, Rx: number, Rw: number): number {
-    if (Rw === 0) return 0; // don't divide by 0.
-    return N * (((a - Rx) / Rw) * (max - min) + min);
+  if (Rw === 0) return 0; // don't divide by 0.
+  return N * (((a - Rx) / Rw) * (max - min) + min);
 }
 
 // Interpolate `x` from normal [min, max] to client [Rx, Rw]
@@ -60,66 +53,35 @@ function solveTwoUnknowns(x1: number, x2: number, a1: number, a2: number, Rx: nu
 }
 
 export class ZoomPanSolver {
-  private initialZoomX: MinMax = { min: 0, max: N };
-  private initialZoomY: MinMax = { min: 0, max: N };
-  private currentZoomX: MinMax = { min: 0, max: N };
-  private currentZoomY: MinMax = { min: 0, max: N };
+  private zoom: { x: MinMax; y: MinMax } = { x: { min: 0, max: N, }, y: { min: 0, max: N } };
   private readonly origins1: OriginTouch = { identifier: NaN, normalX: NaN, normalY: NaN };
   private readonly origins2: OriginTouch = { identifier: NaN, normalX: NaN, normalY: NaN };
 
-  handleTouchStart(clientRect: ClientBounds, targetTouch1: TargetTouch, targetTouch2: TargetTouch): void {
-    const { x: Rx, y: Ry, width: Rw, height: Rh } = clientRect;
-    let a: number, b: number;
+  handleTouchStart(bounds: ClientBounds, touch1: Touch, touch2: Touch): void {
+    this.origins1.identifier = touch1.identifier;
+    this.origins1.normalX = toNormal(this.zoom.x, touch1.clientX, bounds.x, bounds.width);
+    this.origins1.normalY = toNormal(this.zoom.y, touch1.clientY, bounds.y, bounds.height);
 
-    a = targetTouch1.clientX;
-    b = targetTouch1.clientY;
-    this.origins1.identifier = targetTouch1.identifier;
-    this.origins1.normalX = toNormal(this.initialZoomX, a, Rx, Rw);
-    this.origins1.normalY = toNormal(this.initialZoomY, b, Ry, Rh);
 
-    a = targetTouch2.clientX;
-    b = targetTouch2.clientY;
-    this.origins2.identifier = targetTouch2.identifier;
-    this.origins2.normalX = toNormal(this.initialZoomX, a, Rx, Rw);
-    this.origins2.normalY = toNormal(this.initialZoomY, b, Ry, Rh);
+    this.origins2.identifier = touch2.identifier;
+    this.origins2.normalX = toNormal(this.zoom.x, touch2.clientX, bounds.x, bounds.width);
+    this.origins2.normalY = toNormal(this.zoom.y, touch2.clientY, bounds.y, bounds.height);
   }
 
-  handleTouchMove(clientRect: ClientBounds, targetTouch1: TargetTouch, targetTouch2: TargetTouch): void {
-    const { x: Rx, y: Ry, width: Rw, height: Rh } = clientRect;
+  handleTouchMove(bounds: ClientBounds, touch1: Touch, touch2: Touch): void {
     const { origins1, origins2 } = this;
-
-    // The ordering of the elements in TouchEvent.targetTouches is not guaranteed to be the same in 'touchstart'
-    // and 'touchend', so cannot assume that the indices of `origins` and `targetTouches` line-up.
-    const touches1 = origins1.identifier === targetTouch1.identifier ? targetTouch1 : targetTouch2;
-    const touches2 = origins2.identifier === targetTouch2.identifier ? targetTouch2 : targetTouch1;
-
-    const x1 = origins1.normalX;
-    const x2 = origins2.normalX;
-    const a1 = touches1.clientX;
-    const a2 = touches2.clientX;
-    const y1 = origins1.normalY;
-    const y2 = origins2.normalY;
-    const b1 = touches1.clientY;
-    const b2 = touches2.clientY;
-
-    this.currentZoomX = solveTwoUnknowns(x1, x2, a1, a2, Rx, Rw);
-    this.currentZoomY = solveTwoUnknowns(y1, y2, b1, b2, Ry, Rh);
+    touch1 = origins1.identifier === touch1.identifier ? touch1 : touch2;
+    touch2 = origins2.identifier === touch2.identifier ? touch2 : touch1;
+    this.zoom.x = solveTwoUnknowns(origins1.normalX, origins2.normalX, touch1.clientX, touch2.clientX, bounds.x, bounds.width);
+    this.zoom.y = solveTwoUnknowns(origins1.normalY, origins2.normalY, touch1.clientY, touch2.clientY, bounds.y, bounds.height);
   }
 
-  handleTouchEnd(): void {
-    this.initialZoomX = this.currentZoomX;
-    this.initialZoomY = this.currentZoomY;
-  }
-
-  toCSSTransform(clientRect: ClientBounds): Transform {
-    const { x: Rx, y: Ry, width: Rw, height: Rh } = clientRect;
-    const { currentZoomX: zoomX, currentZoomY: zoomY } = this;
-
-    return {
-      scaleX: N / (zoomX.max - zoomX.min),
-      scaleY: N / (zoomY.max - zoomY.min),
-      translationX: toClient(zoomX, 0, Rx, Rw) - Rx,
-      translationY: toClient(zoomY, 0, Ry, Rh) - Ry,
-    };
+  toCSSTransform(bounds: ClientBounds): string {
+    const { x: Rx, y: Ry, width: Rw, height: Rh } = bounds;
+    const tX = toClient(this.zoom.x, 0, Rx, Rw) - Rx;
+    const tY = toClient(this.zoom.y, 0, Ry, Rh) - Ry;
+    const sX = N / (this.zoom.x.max - this.zoom.x.min);
+    const sY = N / (this.zoom.y.max - this.zoom.y.min);
+    return `translate(${tX}px, ${tY}px) scale(${sX}, ${sY})`;
   }
 }

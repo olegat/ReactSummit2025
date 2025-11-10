@@ -10,51 +10,35 @@ interface ZoomPanProps {
 export default function ZoomPan({ src, width = 400, height = 300 }: ZoomPanProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { current: solver } = useRef<ZoomPanSolver>(new ZoomPanSolver());
-
   const [transform, setTransform] = useState(`translate(0px, 0px) scale(1, 1)`);
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (e.targetTouches.length === 2 && containerRef.current != null) {
-      e.preventDefault();
+    if (e.targetTouches.length !== 2 || containerRef.current == null) return;
+    e.preventDefault();
+    const rect = containerRef.current.getBoundingClientRect();
 
-      // Initialise the math:
-      const rect = containerRef.current.getBoundingClientRect();
-      solver.handleTouchStart(rect, e.targetTouches[0], e.targetTouches[1]);
-    }
+    solver.handleTouchStart(rect, e.targetTouches[0], e.targetTouches[1]);  // Initialise the math
   };
 
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (containerRef.current != null && e.targetTouches.length === 2) {
-      e.preventDefault();
+    if (e.targetTouches.length !== 2 || containerRef.current == null) return;
+    e.preventDefault();
+    const rect = containerRef.current.getBoundingClientRect();
 
-      // Solve the math
-      const rect = containerRef.current.getBoundingClientRect();
-      solver.handleTouchMove(rect, e.targetTouches[0], e.targetTouches[1]);
-
-      // Update React state
-      const { scaleX, scaleY, translationX, translationY } = solver.toCSSTransform(rect)
-      setTransform(`translate(${translationX}px, ${translationY}px) scale(${scaleX}, ${scaleY})`);
-    }
-  };
-
-  const handleTouchEnd = (_e: React.TouchEvent<HTMLDivElement>) => {
-    solver.handleTouchEnd();
+    solver.handleTouchMove(rect, e.targetTouches[0], e.targetTouches[1]);   // Solve the math
+    setTransform(solver.toCSSTransform(rect));                              // Update React state
   };
 
   return (
     <div
       ref={containerRef}
       style={{ width, height, overflow: 'hidden', background: 'lime', touchAction: 'none' }}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onTouchCancel={handleTouchEnd}
+      onTouchStart={handleTouchStart} onTouchMove={handleTouchMove}
     >
       <img
         src={src}
         alt='Zoomable'
-        style={{ width: '100%', height: '100%', transform, transformOrigin: 'left top' }}
-      />
+        style={{ width: '100%', height: '100%', transform, transformOrigin: 'left top' }} />
     </div>
   );
 }
