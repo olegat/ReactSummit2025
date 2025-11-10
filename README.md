@@ -12,3 +12,9 @@ This repository includes the following resources:
 ## Citations
 
 Google (no date) _Material Design_. Available at: https://m2.material.io/design/interaction/gestures.html#properties
+
+## License
+
+The MIT License (MIT) - free for commercial use.
+
+I simply kindly request that you give credit if you reuse this for follow-up research or talks.
