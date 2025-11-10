@@ -2,8 +2,9 @@
 
 Example project, setup from "React + TypeScript + Vite" template
 
-Commands:
+| Action | Command         |
+| ------ | --------------- |
+| Setup  | `npm install`   |
+| Build  | `npm run build` |
+| Host   | `npm run dev`   |
 
-| Setup | `npm install`   |
-| Build | `npm run build` |
-| Host  | `npm run dev`   |
