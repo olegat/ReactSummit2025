@@ -1,0 +1,15 @@
+\begin{align*}
+  \textrm{let }c &= \frac{t_1}{t_2} \\
+  \\
+  x_1                &= t_1 (Z'_{max} - Z'_{min}) + N \cdot Z'_{min} \\
+  x_1                &= t_1 Z'_{max} - t_1 Z'_{min} + N \cdot Z'_{min} \\
+  x_1 - t_1 Z'_{max} &= -t_1 Z'_{min} + N \cdot Z'_{min} \\
+  &= (N - t_1) Z'_{min} \\
+  x_1 - t_1 \frac {x_2 + (t_2 - N) Z'_{min}} {t_2} &= (N - t_1) Z'_{min} \\
+  x_1 - c \cdot x_2 - c \cdot (t_2 - N) Z'_{min} &=  (N - t_1) Z'_{min} \\
+  x_1 - c \cdot x_2 &=  (N - t_1) Z'_{min} + c \cdot (t_2 - N) Z'_{min} \\
+  x_1 - c \cdot x_2 &=  Z'_{min} ( (N - t_1) + c \cdot (t_2 - N) ) \\
+  \\
+  \therefore
+  Z'_{min} &= \frac{x_1 - c \cdot x_2}{N - t_1 + c \cdot (t_2 - N)} \\
+\end{align*}
