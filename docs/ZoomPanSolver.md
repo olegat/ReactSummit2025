@@ -185,8 +185,8 @@ complement:
 public getNormalY(dir?: 'downwards' | 'upwards'): MinMax {
   if (dir === 'upwards') {
     return {
-      min: 1 - this.currentZoomY.min,
-      max: 1 - this.currentZoomY.max,
+      min: N - this.currentZoomY.min,
+      max: N - this.currentZoomY.max,
     };
   } else {
     return this.currentZoomY;
