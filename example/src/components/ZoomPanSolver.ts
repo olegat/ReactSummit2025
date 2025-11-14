@@ -62,7 +62,6 @@ export class ZoomPanSolver {
     this.origins1.normalX = toNormal(this.zoom.x, touch1.clientX, bounds.x, bounds.width);
     this.origins1.normalY = toNormal(this.zoom.y, touch1.clientY, bounds.y, bounds.height);
 
-
     this.origins2.identifier = touch2.identifier;
     this.origins2.normalX = toNormal(this.zoom.x, touch2.clientX, bounds.x, bounds.width);
     this.origins2.normalY = toNormal(this.zoom.y, touch2.clientY, bounds.y, bounds.height);
