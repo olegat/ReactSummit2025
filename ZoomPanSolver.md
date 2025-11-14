@@ -44,7 +44,7 @@ Let's also define:
 $N$ is typically $1$, but it can be set to a higher value for more precision.
 
 Note that, in the interest of simplicity, the assumption here is that fingers
-will always stay with bounds the `<ZoomPan`>. In practice however the user can
+will always stay with bounds the `<ZoomPan>`. In practice however the user can
 drag fingers outside the `<ZoomPan>`, so the production code may need to clamp
 screen values.
 
@@ -117,21 +117,21 @@ Z\prime_{max} &= \frac{x_2 + (t_2 - N) Z\prime_{min}}{t_2} \\
 \end{align*}
 $$
 
-Now we can substitue $Z\prime_{max}$ into equation $(1)$:
+Now we can substitute $Z\prime_{max}$ into equation $(1)$:
 
 $$
 \begin{align*}
 x_1                &= t_1 (Z\prime_{max} - Z\prime_{min}) + N \cdot Z\prime_{min} \\
 x_1                &= t_1 Z\prime_{max} - t_1 Z\prime_{min} + N \cdot Z\prime_{min} \\
-x_1 - t_1 Z\prime_{max} &= -t_1 Z\prime_{min} + N \cdot Z\prime_{min} \\
+x_1 - t_1 Z\prime_{max} &= -t_1 Z\prime_{min} + N \cdot Z\prime_{min}\\
                    &= (N - t_1) Z\prime_{min} \\
-x_1 - t_1 \frac {x_2 + (t_2 - N) Z\prime_{min}} {t_2} &= (N - t_1) Z\prime_{min} \\
+x_1 - t_1 \frac {x_2 + (t_2 - N) Z\prime_{min}} {t_2} &= (N - t_1) Z\prime_{min} \qquad Z\prime_{max} \textrm{ substituted}\\
 x_1 - \frac{t_1}{t_2} x_2 - \frac{t_1}{t_2} (t_2 - N) Z\prime_{min} &=  (N - t_1) Z\prime_{min} \\
 x_1 - \frac{t_1}{t_2} x_2 &=  (N - t_1) Z\prime_{min} + \frac{t_1}{t_2} (t_2 -1) Z\prime_{min} \\
 \end{align*}
 $$
 
-Let $c = \frac{t_1}{t_2}$
+$\textrm{let } c = \frac{t_1}{t_2}$
 
 $$
 \begin{align*}
